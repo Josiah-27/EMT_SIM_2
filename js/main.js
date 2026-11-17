@@ -196,8 +196,40 @@ function refresh() {
       </tr>`).join('')
     : '<tr><td colspan="5">No stub needed for this load.</td></tr>';
 
+  renderSheet();
+
   $('btnPlay').textContent = state.playing ? 'Pause wave' : 'Play wave';
   $('btnPlay').setAttribute('aria-pressed', String(!state.playing));
+}
+
+/* ---------- answer sheet: everything the question asks for ---------- */
+let sheetKey = '';
+function renderSheet() {
+  const key = [state.Z0, state.R, state.X, state.type].join('|');
+  if (key === sheetKey) return;
+  sheetKey = key;
+  const deg = (load.theta * 180) / Math.PI;
+  const rl = load.rho > 0 ? -20 * Math.log10(load.rho) : Infinity;
+  const rows = [
+    ['Reflection coefficient at the load, Γ<sub>L</sub>', `<b>${E.fmt(load.rho, 3)} ∠ ${E.fmt(deg, 1)}°</b> <span>(${E.fmtComplex(load.gammaL, 3)})</span>`],
+    ['Standing wave ratio, VSWR', `<b>${E.fmt(load.vswr)}</b>`],
+    ['Power reflected by the load', `<b>${E.fmt(load.reflected * 100, 1)}%</b> <span>(return loss ${E.fmt(rl, 2)} dB)</span>`],
+    ['Normalised load, z<sub>L</sub>', `<b>${E.fmtComplex(load.zL)}</b>`],
+    ['Load admittance, y<sub>L</sub>', `<b>${E.fmtComplex(load.yL)}</b> <span>(at ${E.fmt(load.wtgY, 3)} on the outer scale)</span>`],
+    ['With the stub fitted', '<b>Γ = 0, VSWR = 1</b> <span>(line sees ' + E.fmt(state.Z0, 0) + ' Ω)</span>'],
+  ];
+  $('sheetList').innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+  $('sheetBody').innerHTML = sols.length
+    ? sols.map((s, i) => `
+      <tr>
+        <th scope="row">${i + 1}</th>
+        <td><b>${E.fmt(s.d, 3)} λ</b></td>
+        <td>${E.fmtComplex(s.y)}</td>
+        <td>${E.fmtJ(s.bStub)}</td>
+        <td><b>${E.fmt(s.l, 3)} λ</b></td>
+      </tr>`).join('')
+    : '<tr><td colspan="5">No stub needed for this load.</td></tr>';
+  $('sheetNote').textContent = `${state.type === 'short' ? 'Short-circuited' : 'Open-circuited'} shunt stub on a ${E.fmt(state.Z0, 0)} Ω line. Either row is a complete answer; the first uses the shorter stub and sits closer to the load.`;
 }
 
 /* ---------- events ---------- */

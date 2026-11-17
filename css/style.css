@@ -39,13 +39,14 @@ fieldset { border: 0; min-width: 0; }
   margin: 0 auto;
   padding: 18px 18px 28px;
   grid-template-columns: minmax(0, 1fr) 420px;
-  grid-template-areas: "top side" "stage side" "steps side" "foot foot";
-  grid-template-rows: auto auto 1fr auto;
+  grid-template-areas: "top side" "stage side" "steps side" "sheet side" "foot foot";
+  grid-template-rows: auto auto auto 1fr auto;
   align-items: start;
 }
 .top { grid-area: top; }
 .stage { grid-area: stage; }
 .steps { grid-area: steps; }
+.sheet { grid-area: sheet; }
 .side { grid-area: side; display: grid; gap: 14px; }
 .foot { grid-area: foot; }
 
@@ -214,6 +215,20 @@ a:focus-visible, input:focus-visible { outline: 2px solid var(--wave); outline-o
 .answers tr.on td, .answers tr.on th { color: var(--d); }
 .note { margin-top: 12px; font-size: 0.88rem; color: var(--dim); }
 
+/* ---------- answer sheet ---------- */
+.sheet-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px 24px; margin-bottom: 16px; }
+.sheet-list dt { font-size: 0.85rem; color: var(--dim); }
+.sheet-list dd { font-variant-numeric: tabular-nums; }
+.sheet-list dd b { font: 600 1.2rem/1.3 var(--display); color: var(--ice); }
+.sheet-list dd span { display: block; font-size: 0.85rem; color: var(--dim); }
+.sheet-list div:first-child dd b { color: var(--load); }
+.table-wrap { overflow-x: auto; }
+.sheet-table { width: 100%; min-width: 460px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.sheet-table th, .sheet-table td { text-align: left; padding: 9px 8px; border-top: 1px solid var(--line); }
+.sheet-table thead th { border-top: 0; font-size: 0.82rem; font-weight: 500; color: var(--dim); }
+.sheet-table td b { color: var(--d); font-weight: 600; }
+.sheet-table td:last-child b { color: var(--stub); }
+
 /* ---------- problem inputs ---------- */
 .fields { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
 .fields label { display: grid; gap: 4px; font-size: 0.85rem; color: var(--dim); }
@@ -241,7 +256,8 @@ a:focus-visible, input:focus-visible { outline: 2px solid var(--wave); outline-o
 @media (max-width: 1040px) {
   .app {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-areas: "top" "stage" "steps" "side" "foot";
+    grid-template-areas: "top" "stage" "steps" "sheet" "side" "foot";
+    grid-template-rows: none;
     padding: 12px 12px 24px;
     gap: 12px;
   }
