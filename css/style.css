@@ -216,18 +216,28 @@ a:focus-visible, input:focus-visible { outline: 2px solid var(--wave); outline-o
 .note { margin-top: 12px; font-size: 0.88rem; color: var(--dim); }
 
 /* ---------- answer sheet ---------- */
-.sheet-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 14px 24px; margin-bottom: 16px; }
+.sliders { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 0 28px; }
+.sheet h3 { font: 600 0.95rem/1.3 "IBM Plex Sans", system-ui, sans-serif; color: var(--dim); margin: 18px 0 10px; padding-top: 14px; border-top: 1px solid var(--line); }
+.sheet-status { font-weight: 600; color: var(--stub); }
+.sheet-status.ok { color: var(--ok); }
+.sheet-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 14px 24px; }
 .sheet-list dt { font-size: 0.85rem; color: var(--dim); }
 .sheet-list dd { font-variant-numeric: tabular-nums; }
 .sheet-list dd b { font: 600 1.2rem/1.3 var(--display); color: var(--ice); }
 .sheet-list dd span { display: block; font-size: 0.85rem; color: var(--dim); }
-.sheet-list div:first-child dd b { color: var(--load); }
+.sheet-list dd b.c-d { color: var(--d); }
+.sheet-list dd b.c-stub { color: var(--stub); }
+.sheet-list dd b.c-load { color: var(--load); }
+.sheet-list dd b.c-ok { color: var(--ok); }
 .table-wrap { overflow-x: auto; }
-.sheet-table { width: 100%; min-width: 460px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
-.sheet-table th, .sheet-table td { text-align: left; padding: 9px 8px; border-top: 1px solid var(--line); }
+.sheet-table { width: 100%; min-width: 520px; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.sheet-table th, .sheet-table td { text-align: left; padding: 8px; border-top: 1px solid var(--line); }
 .sheet-table thead th { border-top: 0; font-size: 0.82rem; font-weight: 500; color: var(--dim); }
 .sheet-table td b { color: var(--d); font-weight: 600; }
-.sheet-table td:last-child b { color: var(--stub); }
+.sheet-table td:nth-child(5) b { color: var(--stub); }
+.sheet-table td:last-child { text-align: right; padding-right: 0; }
+.sheet-table tr.on th { color: var(--ok); }
+.sheet-table tr.on th::after { content: " shown"; font-weight: 500; font-size: 0.8rem; }
 
 /* ---------- problem inputs ---------- */
 .fields { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
@@ -277,5 +287,6 @@ a:focus-visible, input:focus-visible { outline: 2px solid var(--wave); outline-o
   .step-tabs button { flex-direction: column; justify-content: center; gap: 6px; padding: 8px 2px; min-height: 62px; text-align: center; font-size: 0.78rem; }
   .step-body h2 { font-size: 1.3rem; }
   .panel { padding: 14px; }
-  .answers td:nth-child(4), .answers th:nth-child(4) { display: none; }
+  .sheet-list { grid-template-columns: 1fr 1fr; gap: 12px 14px; }
+  .sheet-list dd b { font-size: 1.05rem; }
 }

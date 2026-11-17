@@ -177,24 +177,46 @@ function refresh() {
   $('dRow').classList.toggle('idle', !showD);
   $('lRow').classList.toggle('idle', !stubOn);
 
-  // live readings
+  // live answers for the stub where the sliders are now
   const zin = E.div(E.cx(state.Z0, 0), line.yIn);
-  $('rYd').textContent = showD ? E.fmtComplex(line.yD) : '—';
-  $('rStub').textContent = stubOn ? E.fmtJ(line.bStub) : 'no stub yet';
-  $('rYin').textContent = E.fmtComplex(line.yIn);
-  $('rZin').textContent = `${E.fmtComplex(zin, 1)} Ω`;
+  const rhoIn = line.rhoIn;
+  const gDeg = (E.arg(line.gammaIn) * 180) / Math.PI;
+  const rlIn = rhoIn > 1e-6 ? -20 * Math.log10(rhoIn) : Infinity;
+  const gammaTxt = rhoIn < 0.0005 ? '0.000' : `${E.fmt(rhoIn, 3)} ∠ ${E.fmt(gDeg, 1)}°`;
+  const live = [
+    ['Stub position, d', `<b class="c-d">${showD ? E.fmt(d, 3) + ' λ' : 'not placed'}</b>`],
+    ['Stub length, l', `<b class="c-stub">${stubOn ? E.fmt(state.l, 3) + ' λ' : 'no stub yet'}</b>`],
+    ['Reflection coefficient the generator sees, Γ', `<b class="${matched ? 'c-ok' : 'c-load'}">${gammaTxt}</b>`],
+    ['VSWR on the feed line', `<b class="${matched ? 'c-ok' : ''}">${E.fmt(line.vswrIn)}</b>`],
+    ['Power reflected', `<b class="${matched ? 'c-ok' : ''}">${E.fmt(line.reflectedIn * 100, 1)}%</b> <span>(return loss ${E.fmt(rlIn, 2)} dB)</span>`],
+    ['Line admittance at the stub, y(d)', `<b>${showD ? E.fmtComplex(line.yD) : E.fmtComplex(load.yL)}</b>`],
+    ['Stub adds', `<b>${stubOn ? E.fmtJ(line.bStub) : 'nothing yet'}</b>`],
+    ['Total the generator sees, y<sub>in</sub>', `<b>${E.fmtComplex(line.yIn)}</b> <span>(Z<sub>in</sub> = ${E.fmtComplex(zin, 1)} Ω)</span>`],
+  ];
+  $('sheetLive').innerHTML = live.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
+  $('sheetStatus').textContent = matched
+    ? 'Matched. This stub position and length cancel the reflection completely.'
+    : stubOn
+      ? `Not matched: ${E.fmt(line.reflectedIn * 100, 1)}% of the power is still reflected. Move d until y(d) reads 1 + jb, then set l so the stub adds the opposite.`
+      : 'No stub fitted yet, so the generator sees the bare load.';
+  $('sheetStatus').classList.toggle('ok', matched);
 
-  // both answers
-  $('solBody').innerHTML = sols.length
-    ? sols.map((s, i) => `
+  // exact answers
+  const solKey = [state.Z0, state.R, state.X, state.type, state.sol, showD].join('|');
+  if (solKey !== solShown) {
+    solShown = solKey;
+    $('solBody').innerHTML = sols.length
+      ? sols.map((s, i) => `
       <tr class="${i === state.sol && showD ? 'on' : ''}">
         <th scope="row">${i + 1}</th>
-        <td>${E.fmt(s.d, 3)} λ</td>
-        <td>${E.fmt(s.l, 3)} λ</td>
+        <td><b>${E.fmt(s.d, 3)} λ</b></td>
         <td>${E.fmtComplex(s.y)}</td>
+        <td>${E.fmtJ(s.bStub)}</td>
+        <td><b>${E.fmt(s.l, 3)} λ</b></td>
         <td><button type="button" class="btn small" data-sol="${i}">Show</button></td>
       </tr>`).join('')
-    : '<tr><td colspan="5">No stub needed for this load.</td></tr>';
+      : '<tr><td colspan="6">No stub needed for this load.</td></tr>';
+  }
 
   renderSheet();
 
@@ -204,6 +226,7 @@ function refresh() {
 
 /* ---------- answer sheet: everything the question asks for ---------- */
 let sheetKey = '';
+let solShown = '';
 function renderSheet() {
   const key = [state.Z0, state.R, state.X, state.type].join('|');
   if (key === sheetKey) return;
@@ -211,25 +234,14 @@ function renderSheet() {
   const deg = (load.theta * 180) / Math.PI;
   const rl = load.rho > 0 ? -20 * Math.log10(load.rho) : Infinity;
   const rows = [
-    ['Reflection coefficient at the load, Γ<sub>L</sub>', `<b>${E.fmt(load.rho, 3)} ∠ ${E.fmt(deg, 1)}°</b> <span>(${E.fmtComplex(load.gammaL, 3)})</span>`],
-    ['Standing wave ratio, VSWR', `<b>${E.fmt(load.vswr)}</b>`],
-    ['Power reflected by the load', `<b>${E.fmt(load.reflected * 100, 1)}%</b> <span>(return loss ${E.fmt(rl, 2)} dB)</span>`],
+    ['Reflection coefficient at the load, Γ<sub>L</sub>', `<b class="c-load">${E.fmt(load.rho, 3)} ∠ ${E.fmt(deg, 1)}°</b> <span>(${E.fmtComplex(load.gammaL, 3)})</span>`],
+    ['VSWR with no stub', `<b>${E.fmt(load.vswr)}</b>`],
+    ['Power reflected with no stub', `<b>${E.fmt(load.reflected * 100, 1)}%</b> <span>(return loss ${E.fmt(rl, 2)} dB)</span>`],
     ['Normalised load, z<sub>L</sub>', `<b>${E.fmtComplex(load.zL)}</b>`],
     ['Load admittance, y<sub>L</sub>', `<b>${E.fmtComplex(load.yL)}</b> <span>(at ${E.fmt(load.wtgY, 3)} on the outer scale)</span>`],
-    ['With the stub fitted', '<b>Γ = 0, VSWR = 1</b> <span>(line sees ' + E.fmt(state.Z0, 0) + ' Ω)</span>'],
   ];
   $('sheetList').innerHTML = rows.map(([k, v]) => `<div><dt>${k}</dt><dd>${v}</dd></div>`).join('');
-  $('sheetBody').innerHTML = sols.length
-    ? sols.map((s, i) => `
-      <tr>
-        <th scope="row">${i + 1}</th>
-        <td><b>${E.fmt(s.d, 3)} λ</b></td>
-        <td>${E.fmtComplex(s.y)}</td>
-        <td>${E.fmtJ(s.bStub)}</td>
-        <td><b>${E.fmt(s.l, 3)} λ</b></td>
-      </tr>`).join('')
-    : '<tr><td colspan="5">No stub needed for this load.</td></tr>';
-  $('sheetNote').textContent = `${state.type === 'short' ? 'Short-circuited' : 'Open-circuited'} shunt stub on a ${E.fmt(state.Z0, 0)} Ω line. Either row is a complete answer; the first uses the shorter stub and sits closer to the load.`;
+  $('sheetNote').textContent = `${state.type === 'short' ? 'Short-circuited' : 'Open-circuited'} shunt stub on a ${E.fmt(state.Z0, 0)} Ω line. Either row is a complete answer; press Show to move the sliders there.`;
 }
 
 /* ---------- events ---------- */
@@ -286,7 +298,8 @@ function bind() {
     $('inZ0').value = 50; $('inR').value = 35; $('inX').value = -47.5;
     $('typeShort').checked = true;
     recompute();
-    setStage(1);
+    state.stage = 4;
+    setStage(4, { animate: false });
   });
 
   $('btnPlay').addEventListener('click', () => { state.playing = !state.playing; dirty = true; });
@@ -299,6 +312,9 @@ function bind() {
 /* ---------- go ---------- */
 recompute();
 bind();
+// open with the question's own answer in place: stub at solution 1
+state.stage = 4;
+setStage(4, { animate: false });
 try {
   scene = createScene($('scene'), $('labels'));
 } catch (err) {

@@ -10,7 +10,9 @@ An interactive site that solves and explains this problem:
   going to the load and coming back. Attach the stub and the wave on the generator side goes flat.
 - **Smith chart** (2D canvas): the same four steps you would draw by hand: plot z_L, flip to y_L,
   walk toward the generator to the g = 1 circle, then cancel the leftover susceptance with the stub.
-- **Sliders** for the stub position `d` and length `l`, and inputs to change Z0, the load, or the stub end.
+- **Live answers**: the page opens with the question's own answer in place (solution 1). Move the
+  `d` and `l` sliders, or change Z0, the load or the stub end, and the reflection coefficient, VSWR,
+  reflected power and admittances update as you go.
 
 ## Answers
 

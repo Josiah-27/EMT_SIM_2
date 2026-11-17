@@ -57,13 +57,30 @@
       </div>
     </section>
 
-    <section class="sheet panel" aria-label="Answers to the question">
-      <h2>Answers to the question</h2>
+    <section class="sheet panel" aria-label="Answers">
+      <h2>Answers</h2>
+      <div class="sliders">
+        <div class="slider" id="dRow">
+          <label for="dRange">Stub position from load, d</label>
+          <output id="dOut" for="dRange"></output>
+          <input id="dRange" class="r-d" type="range" min="0" max="0.5" step="0.001" value="0">
+        </div>
+        <div class="slider" id="lRow">
+          <label for="lRange">Stub length, l</label>
+          <output id="lOut" for="lRange"></output>
+          <input id="lRange" class="r-l" type="range" min="0.005" max="0.495" step="0.001" value="0.25">
+        </div>
+      </div>
+      <p id="sheetStatus" class="sheet-status" role="status"></p>
+      <h3>With the stub where the sliders are now</h3>
+      <dl id="sheetLive" class="sheet-list"></dl>
+      <h3>The load on its own</h3>
       <dl id="sheetList" class="sheet-list"></dl>
+      <h3>Stub settings that match this load exactly</h3>
       <div class="table-wrap">
         <table class="sheet-table">
-          <thead><tr><th scope="col">Crossing</th><th scope="col">Stub position, d</th><th scope="col">Admittance there</th><th scope="col">Stub must add</th><th scope="col">Stub length, l</th></tr></thead>
-          <tbody id="sheetBody"></tbody>
+          <thead><tr><th scope="col">No.</th><th scope="col">Stub position, d</th><th scope="col">Admittance there</th><th scope="col">Stub must add</th><th scope="col">Stub length, l</th><th></th></tr></thead>
+          <tbody id="solBody"></tbody>
         </table>
       </div>
       <p class="note" id="sheetNote"></p>
@@ -79,36 +96,6 @@
           <li><i class="k-stub"></i>stub</li>
           <li><i class="k-ok"></i>g = 1</li>
         </ul>
-      </section>
-
-      <section class="panel">
-        <h2>Try it yourself</h2>
-        <div class="slider" id="dRow">
-          <label for="dRange">Stub position from load, d</label>
-          <output id="dOut" for="dRange"></output>
-          <input id="dRange" class="r-d" type="range" min="0" max="0.5" step="0.001" value="0">
-        </div>
-        <div class="slider" id="lRow">
-          <label for="lRange">Stub length, l</label>
-          <output id="lOut" for="lRange"></output>
-          <input id="lRange" class="r-l" type="range" min="0.005" max="0.495" step="0.001" value="0.25">
-        </div>
-
-        <dl class="readings">
-          <div><dt>Line at the stub, y(d)</dt><dd id="rYd"></dd></div>
-          <div><dt>Stub adds</dt><dd id="rStub"></dd></div>
-          <div><dt>Generator sees, y<sub>in</sub></dt><dd id="rYin"></dd></div>
-          <div><dt>As an impedance</dt><dd id="rZin"></dd></div>
-        </dl>
-      </section>
-
-      <section class="panel">
-        <h2>Both answers</h2>
-        <table class="answers">
-          <thead><tr><th scope="col">No.</th><th scope="col">d</th><th scope="col">l</th><th scope="col">y at stub</th><th></th></tr></thead>
-          <tbody id="solBody"></tbody>
-        </table>
-        <p class="note">To check any answer, slide d: the amber dot has to sit on the g = 1 circle before a stub can finish the job.</p>
       </section>
 
       <section class="panel">
