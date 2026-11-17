@@ -1,0 +1,265 @@
+:root {
+  --space: #070a1f;
+  --panel: #111634;
+  --panel-2: #1a2048;
+  --line: rgba(190, 204, 255, 0.16);
+  --ink: #e8edff;
+  --dim: #a3aedb;
+  --ice: #d2ddf7;
+  --wave: #6ef3ff;
+  --d: #ffcf5c;
+  --stub: #ff8177;
+  --ok: #7dffb0;
+  --load: #b9a7ff;
+  --cut: 12px;
+  --facet: polygon(var(--cut) 0, 100% 0, 100% calc(100% - var(--cut)), calc(100% - var(--cut)) 100%, 0 100%, 0 var(--cut));
+  --display: "Bricolage Grotesque", "IBM Plex Sans", system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html { color-scheme: dark; -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  color: var(--ink);
+  font: 400 16px/1.5 "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  background:
+    radial-gradient(60rem 40rem at 85% -10%, rgba(92, 78, 190, 0.28), transparent 60%),
+    radial-gradient(50rem 36rem at -10% 110%, rgba(40, 110, 170, 0.22), transparent 60%),
+    var(--space);
+  background-attachment: fixed;
+}
+h1, h2, p, ol, ul, dl, dd, fieldset { margin: 0; padding: 0; }
+ol, ul { list-style: none; }
+fieldset { border: 0; min-width: 0; }
+
+.app {
+  display: grid;
+  gap: 14px;
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 18px 18px 28px;
+  grid-template-columns: minmax(0, 1fr) 420px;
+  grid-template-areas: "top side" "stage side" "steps side" "foot foot";
+  grid-template-rows: auto auto 1fr auto;
+  align-items: start;
+}
+.top { grid-area: top; }
+.stage { grid-area: stage; }
+.steps { grid-area: steps; }
+.side { grid-area: side; display: grid; gap: 14px; }
+.foot { grid-area: foot; }
+
+/* ---------- header ---------- */
+.top h1 {
+  font: 800 clamp(1.9rem, 1.2rem + 2.6vw, 3.1rem)/1.02 var(--display);
+  letter-spacing: -0.025em;
+  color: var(--ice);
+}
+.top p { margin-top: 10px; max-width: 62ch; color: var(--dim); font-size: 1.02rem; }
+
+/* ---------- 3D stage ---------- */
+.stage {
+  position: relative;
+  height: clamp(420px, 62vh, 660px);
+  overflow: hidden;
+  clip-path: var(--facet);
+  --cut: 22px;
+  background: radial-gradient(120% 90% at 50% 115%, #20276a 0%, #0c1034 46%, #05071a 100%);
+}
+.stage canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+.stage canvas:active { cursor: grabbing; }
+#labels { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+.label {
+  position: absolute; left: 0; top: 0;
+  padding: 2px 8px;
+  font-weight: 600; font-size: 0.82rem; white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+  background: rgba(7, 10, 31, 0.78);
+  color: var(--ink);
+  opacity: 0;
+  will-change: transform;
+}
+.label.l-d { color: var(--d); }
+.label.l-stub { color: var(--stub); }
+.label.l-load { color: var(--load); }
+
+.meter {
+  position: absolute; left: 22px; top: 16px;
+  display: grid; gap: 2px;
+  font-variant-numeric: tabular-nums;
+}
+.meter span:first-child { font: 800 1.7rem/1 var(--display); color: var(--stub); letter-spacing: -0.01em; }
+.meter span:last-child { color: var(--ink); font-size: 0.92rem; font-weight: 500; }
+.meter.ok span:first-child, .meter.ok span:last-child { color: var(--ok); }
+
+.key { display: flex; flex-wrap: wrap; gap: 4px 16px; font-size: 0.82rem; color: var(--dim); }
+.key i { display: inline-block; width: 10px; height: 10px; margin-right: 6px; transform: rotate(45deg); }
+.stage .key {
+  position: absolute; right: 26px; top: 16px;
+  flex-direction: column; gap: 3px;
+  padding: 8px 12px; background: rgba(7, 10, 31, 0.62); color: var(--ink);
+}
+.key.inline { margin-top: 10px; }
+.k-in { background: #fff1c2; }
+.k-back, .k-stub { background: var(--stub); }
+.k-wave { background: var(--wave); }
+.k-load { background: var(--load); }
+.k-d { background: var(--d); }
+.k-ok { background: var(--ok); }
+
+.stage-tools { position: absolute; right: 26px; bottom: 12px; display: flex; gap: 8px; }
+.stage-note {
+  position: absolute; inset: 0; display: grid; place-items: center;
+  padding: 24px; text-align: center; color: var(--dim);
+}
+
+/* ---------- panels ---------- */
+.panel {
+  background: linear-gradient(160deg, var(--panel-2), var(--panel) 55%);
+  padding: 18px;
+  clip-path: var(--facet);
+}
+.panel h2 {
+  font: 600 1.12rem/1.2 var(--display);
+  color: var(--ice);
+  margin-bottom: 12px;
+}
+
+/* ---------- buttons ---------- */
+.btn {
+  font: 600 0.95rem/1 "IBM Plex Sans", system-ui, sans-serif;
+  color: var(--ink);
+  background: #262d63;
+  border: 0;
+  min-height: 44px;
+  padding: 0 18px;
+  cursor: pointer;
+  --cut: 8px;
+  clip-path: var(--facet);
+}
+.btn:hover { background: #303878; }
+.btn.primary { background: var(--ice); color: #0b1030; }
+.btn.primary:hover { background: #ffffff; }
+.btn.small { min-height: 36px; padding: 0 12px; font-size: 0.85rem; }
+.btn:disabled { opacity: 0.4; cursor: default; }
+.btn:focus-visible, .step-tabs button:focus-visible { outline: none; box-shadow: inset 0 0 0 3px var(--wave); }
+a { color: var(--wave); }
+a:focus-visible, input:focus-visible { outline: 2px solid var(--wave); outline-offset: 2px; }
+
+/* ---------- steps ---------- */
+.steps { display: grid; gap: 14px; }
+.step-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.step-tabs button {
+  width: 100%;
+  display: flex; align-items: center; gap: 8px;
+  min-height: 44px; padding: 0 10px;
+  font: 500 0.9rem/1.1 "IBM Plex Sans", system-ui, sans-serif;
+  color: var(--dim);
+  background: rgba(255, 255, 255, 0.05);
+  border: 0; cursor: pointer; text-align: left;
+  --cut: 8px;
+  clip-path: var(--facet);
+}
+.step-tabs b {
+  flex: none; display: grid; place-items: center;
+  position: relative; z-index: 0;
+  width: 26px; height: 26px;
+  font: 800 0.85rem/1 var(--display);
+  color: var(--ink);
+}
+.step-tabs b::before {
+  content: ""; position: absolute; inset: 3px; z-index: -1;
+  background: rgba(255, 255, 255, 0.12);
+  transform: rotate(45deg);
+}
+.step-tabs button.done b { color: #0b1030; }
+.step-tabs button.done b::before { background: var(--load); }
+.step-tabs button[aria-current="step"] { background: var(--ice); color: #0b1030; font-weight: 600; }
+.step-tabs button[aria-current="step"] b { color: var(--ice); }
+.step-tabs button[aria-current="step"] b::before { background: #0b1030; }
+.step-body h2 { font: 800 1.5rem/1.1 var(--display); letter-spacing: -0.015em; margin-bottom: 8px; }
+.step-body p { max-width: 68ch; color: var(--ink); }
+.step-body .eq {
+  margin-top: 12px; min-height: 1.6em;
+  font-size: 1.08rem; color: var(--dim);
+  font-variant-numeric: tabular-nums;
+}
+.eq b { color: var(--d); font-weight: 600; }
+.step-nav { display: flex; gap: 8px; }
+
+/* ---------- Smith chart ---------- */
+.chart-box { width: 100%; max-width: 460px; aspect-ratio: 1; margin: 0 auto; display: grid; place-items: center; }
+.chart-box canvas { display: block; }
+
+/* ---------- sliders ---------- */
+.slider { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: baseline; margin-bottom: 12px; }
+.slider label { font-weight: 500; }
+.slider output { font-weight: 600; font-variant-numeric: tabular-nums; }
+.slider input { grid-column: 1 / -1; width: 100%; height: 32px; margin: 0; }
+.r-d { accent-color: var(--d); }
+.r-l { accent-color: var(--stub); }
+#dRow output { color: var(--d); }
+#lRow output { color: var(--stub); }
+.slider.idle output { color: var(--dim) !important; }
+
+.readings { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 14px; margin-top: 4px; padding-top: 14px; border-top: 1px solid var(--line); }
+.readings dt { font-size: 0.82rem; color: var(--dim); }
+.readings dd { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* ---------- answers ---------- */
+.answers { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.answers th, .answers td { text-align: left; padding: 8px 6px; border-bottom: 1px solid var(--line); }
+.answers thead th { font-size: 0.82rem; font-weight: 500; color: var(--dim); }
+.answers td:last-child { text-align: right; padding-right: 0; }
+.answers tr.on td, .answers tr.on th { color: var(--d); }
+.note { margin-top: 12px; font-size: 0.88rem; color: var(--dim); }
+
+/* ---------- problem inputs ---------- */
+.fields { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.fields label { display: grid; gap: 4px; font-size: 0.85rem; color: var(--dim); }
+.fields input {
+  width: 100%; min-height: 44px; padding: 0 10px;
+  font: 600 1rem "IBM Plex Sans", system-ui, sans-serif;
+  color: var(--ink); background: rgba(5, 7, 26, 0.6);
+  border: 1px solid var(--line); border-radius: 0;
+}
+.seg { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin: 14px 0; }
+.seg legend { font-size: 0.85rem; color: var(--dim); margin-bottom: 4px; }
+.seg label { position: relative; cursor: pointer; }
+.seg input { position: absolute; opacity: 0; inset: 0; }
+.seg span {
+  display: grid; place-items: center; min-height: 44px;
+  background: rgba(255, 255, 255, 0.06); color: var(--dim); font-weight: 500;
+  --cut: 8px; clip-path: var(--facet);
+}
+.seg input:checked + span { background: var(--stub); color: #2a0b08; font-weight: 600; }
+.seg input:focus-visible + span { box-shadow: inset 0 0 0 3px var(--wave); }
+
+.foot { color: var(--dim); font-size: 0.85rem; }
+
+/* ---------- small screens ---------- */
+@media (max-width: 1040px) {
+  .app {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas: "top" "stage" "steps" "side" "foot";
+    padding: 12px 12px 24px;
+    gap: 12px;
+  }
+  .stage {
+    position: sticky; top: 0; z-index: 5;
+    height: 44svh; min-height: 280px;
+    margin: 0 -12px; --cut: 0px;
+  }
+  .meter { left: 12px; top: 10px; }
+  .meter span:first-child { font-size: 1.3rem; }
+  .meter span:last-child { font-size: 0.82rem; }
+  .stage .key { display: none; }
+  .stage-tools { right: 10px; bottom: 8px; }
+  .label { font-size: 0.74rem; padding: 1px 6px; }
+}
+@media (max-width: 480px) {
+  .step-tabs button { flex-direction: column; justify-content: center; gap: 6px; padding: 8px 2px; min-height: 62px; text-align: center; font-size: 0.78rem; }
+  .step-body h2 { font-size: 1.3rem; }
+  .panel { padding: 14px; }
+  .answers td:nth-child(4), .answers th:nth-child(4) { display: none; }
+}
